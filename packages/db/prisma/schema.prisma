@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id       String @id @default(uuid())
+  username String
+  password String
+
+  memberships membership[]
+
+}
+
+model Orgnization {
+  id String @id @default(uuid())
+  name String 
+  discription String
+
+  membership membership[]
+}
+
+model membership {
+  id String @id @default(uuid())
+
+  userId        String
+  orgnizationId String
+
+  user        User        @relation(fields: [userId], references: [id])
+  orgnization Orgnization @relation(fields: [orgnizationId], references: [id])
+
+  @@unique([userId, orgnizationId])
+
+  role String
+
+}
+
+model Board {
+  id           String @id @default(uuid())
+  title        String
+  Organization String
+
+  sections Section[]
+  issues   Issue[]
+}
+
+model Section {
+  id    String @id @default(uuid())
+  title String
+
+  boardId String
+  board   Board   @relation(fields: [boardId], references: [id])
+  issues  Issue[]
+}
+
+model Issue {
+  id          String @id @default(uuid())
+  title       String
+  description String
+
+  boardId   String
+  sectionId String
+
+  board   Board   @relation(fields: [boardId], references: [id])
+  section Section @relation(fields: [sectionId], references: [id])
+}
